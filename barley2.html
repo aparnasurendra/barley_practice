@@ -81,7 +81,7 @@ d3.csv("barley_yields.csv", function(error, data) {
  console.log(data);
 
  var subset = data.filter(function(d) {
-  return d.loc == "StPaul";
+  return d.site == "StPaul";
   });
 
   xscale.domain(d3.extent(data, function(d) {
