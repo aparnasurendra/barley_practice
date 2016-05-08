@@ -101,13 +101,6 @@ d3.csv("barley_yields.csv", function(error, data) {
     .attr("transform", "translate(0,0)")
     .attr("class", "y axis")
     .call(yAxis);
-
-  /*
-  var subset = data.filter(function(d) {
-    return d.group == "III";
-  });
-  console.log(subset);
-  */
   
   var group = svg.selectAll("g.barley")
     .data(subset)
