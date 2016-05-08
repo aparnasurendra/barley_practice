@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style type="text/css">
+body {
+  font-family: arial, sans;
+}
+
+svg {
+  border: 1px solid #d0d0d0;
+}
+
+.axis text {
+  font-size: 12px;
+  fill: #777;
+}
+
+.axis path {
+  display: none;
+}
+
+.axis line {
+  stroke-width:1px;
+  stroke: #ccc;
+  stroke-dasharray: 2px 2px;
+}
+
+circle {
+  opacity: 0.6;
+}
+.barley text {
+  opacity: 0;
+  pointer-events: none;
+}
+.barley:hover text {
+  opacity: 1;
+}
+</style>
+<body>
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.js" charset="utf-8"></script>
+<script>
+var margin = { top: 20, right: 10, bottom: 30, left: 30 };
+var width = 1200 - margin.left - margin.right;
+var height = 400 - margin.top - margin.bottom;
+
+var svg = d3.select("body")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var xscale = d3.scale.linear()
+  .range([0,width]);
+
+var yscale = d3.scale.linear()
+  .range([height,0]);
+
+var xAxis = d3.svg.axis()
+  .scale(xscale)
+  .tickSize(-height)
+  .ticks(20);
+
+var yAxis = d3.svg.axis()
+  .scale(yscale)
+  .orient("left")
+  .tickSize(-width);
+
+var color = d3.scale.category10();
+
+d3.csv("barley_yields.csv", function(error, data) {
+  // data pre-processing
+  data.forEach(function(d) {
+    d.x = +d.year;
+    d.y = +d.yield;
+    d.site = d.site;
+    d.type = d.gen;
+  });
+
+ console.log(data);
+
+ var subset = data.filter(function(d) {
+  return d.loc == "StPaul";
+  });
+
+  xscale.domain(d3.extent(data, function(d) {
+    return d.x;
+  }))
+
+  yscale.domain(d3.extent(data, function(d) {
+    return d.y;
+  }))
+
+  svg.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .attr("class", "x axis")
+    .call(xAxis);
+
+  svg.append("g")
+    .attr("transform", "translate(0,0)")
+    .attr("class", "y axis")
+    .call(yAxis);
+
+  /*
+  var subset = data.filter(function(d) {
+    return d.group == "III";
+  });
+  console.log(subset);
+  */
+  
+  var group = svg.selectAll("g.barley")
+    .data(subset)
+    .enter().append("g")
+    .attr("class", "barley")
+    .attr("transform", function(d) {
+      return "translate(" + xscale(d.x) + "," + yscale(d.y) + ")"
+    });
+
+  group
+    .append("circle")
+    .attr("r", 5)
+    .style("fill", "pink"); 
+
+});
+
+</script>
